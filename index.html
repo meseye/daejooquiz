@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>문제 맞추기</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f6fb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+
+.container{
+  width:100%;
+  max-width:700px;
+  background:#ffffff;
+  border-radius:24px;
+  padding:40px 30px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+h1{
+  margin-top:0;
+  margin-bottom:10px;
+  color:#1f3b73;
+  font-size:2rem;
+}
+
+.sub-text{
+  color:#666;
+  font-size:0.95rem;
+  margin-bottom:30px;
+}
+
+.section-title{
+  text-align:left;
+  margin-top:28px;
+  margin-bottom:12px;
+  font-size:1rem;
+  font-weight:700;
+  color:#1f3b73;
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+}
+
+.category-btn{
+  border:none;
+  border-radius:14px;
+  padding:14px 10px;
+  font-size:0.95rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.2s;
+  color:#1f3b73;
+  background:#e7efff;
+}
+
+.category-btn:hover{
+  transform:translateY(-2px);
+}
+
+.category-btn.active{
+  background:#2f80ed;
+  color:white;
+}
+
+/* 전체 문제 */
+.category-btn.all-btn{
+  background:#dbe8ff;
+  color:#1f3b73;
+}
+
+.category-btn.all-btn.active{
+  background:#5d9cff;
+  color:white;
+}
+
+/* 최근일자 */
+.category-btn.latest-btn{
+  order:-1;
+  background:#fff4dc;
+  color:#9a6a00;
+}
+
+.category-btn.latest-btn.active{
+  background:#ffbf3f;
+  color:white;
+}
+
+.mode-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.mode-btn{
+  border:none;
+  border-radius:14px;
+  padding:14px 10px;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  background:#eef2fb;
+  color:#1f3b73;
+}
+
+.mode-btn.active{
+  background:#2f80ed;
+  color:white;
+}
+
+.mode-guide{
+  margin-top:8px;
+  font-size:0.85rem;
+  color:#888;
+}
+
+.start-btn{
+  margin-top:30px;
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:16px;
+  font-size:1.1rem;
+  font-weight:700;
+  background:#2f80ed;
+  color:white;
+  cursor:pointer;
+}
+
+.start-btn:hover{
+  opacity:0.9;
+}
+
+.quiz-area{
+  display:none;
+}
+
+.card{
+  margin-top:20px;
+  padding:50px 24px;
+  border-radius:20px;
+  background:#f8faff;
+  border:2px solid #d7e3ff;
+  min-height:240px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+}
+
+.category-badge{
+  position:absolute;
+  top:16px;
+  left:16px;
+  background:#2f80ed;
+  color:white;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:0.8rem;
+  font-weight:700;
+}
+
+.quiz-text{
+  font-size:1.5rem;
+  font-weight:700;
+  color:#1f3b73;
+}
+
+.progress{
+  margin-top:20px;
+  font-size:1rem;
+  font-weight:700;
+  color:#2f80ed;
+}
+
+.guide{
+  margin-top:14px;
+  color:#666;
+  font-size:0.95rem;
+}
+
+.reset-btn{
+  margin-top:24px;
+  padding:12px 22px;
+  border:none;
+  border-radius:12px;
+  background:#2f80ed;
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+}
+
+.reset-btn:hover{
+  opacity:0.9;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 시작 화면 -->
+  <div id="startScreen">
+
+    <h1>문제 맞추기</h1>
+
+    <div class="sub-text">
+      원하는 카테고리와 진행 방식을 선택하세요
+    </div>
+
+    <div class="section-title">
+      카테고리 선택
+    </div>
+
+    <div class="category-grid">
+
+      <button class="category-btn latest-btn"
+        onclick="toggleCategory('최근일자', this)">
+        최근일자
+      </button>
+
+      <button class="category-btn all-btn"
+        onclick="toggleCategory('전체 문제', this)">
+        전체 문제
+      </button>
+
+      <button class="category-btn"
+        onclick="toggleCategory('외부감사', this)">
+        외부감사
+      </button>
+
+      <button class="category-btn"
+        onclick="toggleCategory('독립성', this)">
+        독립성
+      </button>
+
+      <button class="category-btn"
+        onclick="toggleCategory('품질관리실', this)">
+        품질관리실
+      </button>
+
+      <button class="category-btn"
+        onclick="toggleCategory('기준서', this)">
+        기준서
+      </button>
+
+    </div>
+
+    <div class="section-title">
+      진행 방식 선택
+    </div>
+
+    <div class="mode-grid">
+
+      <button class="mode-btn"
+        onclick="selectMode('random', this)">
+        랜덤 진행
+      </button>
+
+      <button class="mode-btn"
+        onclick="selectMode('sequence', this)">
+        순차 진행
+      </button>
+
+    </div>
+
+    <div class="mode-guide">
+      ※ 선택하지 않는 경우 랜덤 진행됩니다
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">
+      시작하기
+    </button>
+
+  </div>
+
+  <!-- 문제 화면 -->
+  <div class="quiz-area" id="quizArea">
+
+    <h1>문제 맞추기</h1>
+
+    <div class="card" id="card" onclick="nextStep()">
+
+      <div class="category-badge">
+        카테고리
+      </div>
+
+      <div class="quiz-text">
+        문제를 불러오는 중...
+      </div>
+
+    </div>
+
+    <div class="progress" id="progress">
+      0 / 0
+    </div>
+
+    <div class="guide">
+      문제 → 클릭 → 정답 → 클릭 → 다음 문제
+    </div>
+
+    <button class="reset-btn" onclick="location.reload()">
+      처음으로
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const originalQuizList = [
+
+ { category:"외부감사",date:"46168",q:"Q1. 초도감사 계약 체결기한은?",a:"A1. 사업연도 개시 후 60일 이내"},
+ { category:"외부감사",date:"46168",q:"Q2. 계속감사 계약 체결기한은?",a:"A2. 사업연도 개시 후 45일 이내"},
+ { category:"외부감사",date:"46168",q:"Q3. 회사가 외부감사인에게 산업전문성 요구시 산업전문가가 참여하여야 한다",a:"A3. X(지정감사만 해당)"},
+ { category:"외부감사",date:"46168",q:"Q4. 사내이사는 감사인선임위위원회에 참여할 수 없다",a:"A4. O"},
+ { category:"독립성",date:"46168",q:"Q5. 상장사는 담당이사가 4년 참여할 수 있다",a:"A5. 거짓(3년 한도)"},
+ { category:"독립성",date:"46168",q:"Q6. 외부감사대상 회사는 기장을 할 수 없다",a:"A6. O(재무제표 작성 위반)"},
+ { category:"독립성",date:"46168",q:"Q7. 외부감사대상 회사는 세무조정을 할 수 없다",a:"A7. X(허용 가능)"},
+ { category:"독립성",date:"46168",q:"Q8. 모회사 감사인은 자회사 기장을 할 수 있다",a:"A8. X(재무제표 작성 위반)"},
+ { category:"독립성",date:"46168",q:"Q9. 자회사 감사인은 모회사 기장을 할 수 있다",a:"A9. O(허용 가능)"},
+ { category:"품질관리실",date:"46168",q:"Q10. 업무시간은 2주 이내 입력/승인하여야 한다",a:"A10. 거짓(1주일 단위)"},
+ { category:"품질관리실",date:"46168",q:"Q11. 상장사는 계약전 위험평가를 3년 마다 할 수 있다",a:"A11. 거짓(1년 마다 작성하여야 함)"},
+ { category:"품질관리실",date:"46168",q:"Q12. 보고서일은 심리위원 서명일보다 늦으면 안된다.",a:"A12. O(보고서일 = 심리위원 서명일)"},
+ { category:"품질관리실",date:"46168",q:"Q13. 심리위원의 투입시간은 총감사시간의 1.6% 이상 이여야 한다",a:"A13. X(1% 이상을 요구)"},
+ { category:"기준서",date:"46168",q:"Q14. 상장사는 중소기업특례를 적용할 수 있다",a:"A14. 거짓(일반기업회계기준만 대상)"}
+
+
+];
+
+let selectedCategories = [];
+let selectedMode = "random";
+
+function toggleCategory(category, button){
+
+  // 전체 문제
+  if(category === "전체 문제"){
+
+    if(!selectedCategories.includes("전체 문제")){
+
+      selectedCategories = ["전체 문제"];
+
+      document
+        .querySelectorAll(".category-btn")
+        .forEach(btn => btn.classList.remove("active"));
+
+      button.classList.add("active");
+    }
+
+    else{
+
+      selectedCategories = [];
+
+      button.classList.remove("active");
+    }
+
+    return;
+  }
+
+  // 최근일자
+  if(category === "최근일자"){
+
+    if(!selectedCategories.includes("최근일자")){
+
+      selectedCategories = ["최근일자"];
+
+      document
+        .querySelectorAll(".category-btn")
+        .forEach(btn => btn.classList.remove("active"));
+
+      button.classList.add("active");
+    }
+
+    else{
+
+      selectedCategories = [];
+
+      button.classList.remove("active");
+    }
+
+    return;
+  }
+
+  // 일반 카테고리 클릭 시
+  // 전체 문제 / 최근일자 제거
+  selectedCategories =
+    selectedCategories.filter(
+      c => c !== "전체 문제" && c !== "최근일자"
+    );
+
+  document
+    .querySelector(".all-btn")
+    .classList.remove("active");
+
+  document
+    .querySelector(".latest-btn")
+    .classList.remove("active");
+
+  // ON/OFF
+  if(selectedCategories.includes(category)){
+
+    selectedCategories =
+      selectedCategories.filter(c => c !== category);
+
+    button.classList.remove("active");
+  }
+
+  else{
+
+    selectedCategories.push(category);
+
+    button.classList.add("active");
+  }
+}
+
+function selectMode(mode, button){
+
+  selectedMode = mode;
+
+  document
+    .querySelectorAll(".mode-btn")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+}
+
+let filteredQuizList = [];
+let remainingQuizList = [];
+let currentQuiz = null;
+let showingAnswer = false;
+let currentNumber = 0;
+let totalCount = 0;
+
+function startQuiz(){
+
+  if(selectedCategories.length === 0){
+
+    alert("카테고리를 선택해 주세요.");
+
+    return;
+  }
+
+  const confirmStart =
+    confirm("선택한 문제를 시작하겠습니까?");
+
+  if(!confirmStart){
+    return;
+  }
+
+  // 전체 문제
+  if(selectedCategories.includes("전체 문제")){
+
+    filteredQuizList = [...originalQuizList];
+  }
+
+  // 최근일자
+  else if(selectedCategories.includes("최근일자")){
+
+    const latestDate =
+      [...originalQuizList]
+      .sort((a,b)=>
+        new Date(b.date)-new Date(a.date)
+      )[0].date;
+
+    filteredQuizList =
+      originalQuizList.filter(q =>
+        q.date === latestDate
+      );
+  }
+
+  // 일반 카테고리
+  else{
+
+    filteredQuizList =
+      originalQuizList.filter(q =>
+        selectedCategories.includes(q.category)
+      );
+  }
+
+  totalCount = filteredQuizList.length;
+
+  remainingQuizList = [...filteredQuizList];
+
+  document
+    .getElementById("startScreen")
+    .style.display = "none";
+
+  document
+    .getElementById("quizArea")
+    .style.display = "block";
+
+  nextStep();
+}
+
+const card =
+  document.getElementById("card");
+
+const progress =
+  document.getElementById("progress");
+
+function updateProgress(){
+
+  progress.innerHTML =
+    `${currentNumber} / ${totalCount}`;
+}
+
+function getNextQuiz(){
+
+  if(remainingQuizList.length === 0){
+    return null;
+  }
+
+  // 랜덤
+  if(selectedMode === "random"){
+
+    const randomIndex =
+      Math.floor(
+        Math.random() *
+        remainingQuizList.length
+      );
+
+    return remainingQuizList.splice(randomIndex,1)[0];
+  }
+
+  // 순차
+  return remainingQuizList.shift();
+}
+
+function nextStep(){
+
+  if(currentQuiz === null){
+
+    currentQuiz = getNextQuiz();
+
+    if(currentQuiz === null){
+
+      card.innerHTML =
+        "<div class='quiz-text'>🎉 모든 문제를 완료했습니다!</div>";
+
+      return;
+    }
+
+    currentNumber++;
+
+    updateProgress();
+
+    card.innerHTML = `
+      <div class="category-badge">
+        ${currentQuiz.category}
+      </div>
+
+      <div class="quiz-text">
+        ${currentQuiz.q}
+      </div>
+    `;
+
+    showingAnswer = false;
+
+    return;
+  }
+
+  // 문제 → 정답
+  if(showingAnswer === false){
+
+    card.innerHTML = `
+      <div class="category-badge">
+        ${currentQuiz.category}
+      </div>
+
+      <div class="quiz-text">
+        ${currentQuiz.a}
+      </div>
+    `;
+
+    showingAnswer = true;
+
+    return;
+  }
+
+  // 정답 → 다음 문제
+  currentQuiz = getNextQuiz();
+
+  if(currentQuiz === null){
+
+    card.innerHTML =
+      "<div class='quiz-text'>🎉 모든 문제를 완료했습니다!</div>";
+
+    progress.innerHTML =
+      `${totalCount} / ${totalCount}`;
+
+    return;
+  }
+
+  currentNumber++;
+
+  updateProgress();
+
+  card.innerHTML = `
+    <div class="category-badge">
+      ${currentQuiz.category}
+    </div>
+
+    <div class="quiz-text">
+      ${currentQuiz.q}
+    </div>
+  `;
+
+  showingAnswer = false;
+}
+
+</script>
+
+</body>
+</html>
